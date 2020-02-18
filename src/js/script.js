@@ -52,18 +52,42 @@
     menuProduct: Handlebars.compile(document.querySelector(select.templateOf.menuProduct).innerHTML),
   };
 
-class product {
-  constructor(){
-    const thisProduct = this;
+  class Product {
+    constructor(id, data){
+      const thisProduct = this;
+      thisProduct.id = id;
+      thisProduct.data = data;
+      thisProduct.renderInMenu();
+      console.log('new product:', thisProduct);
+    }
 
-    console.log('new product:', thisProduct);
+    renderInMenu(){
+      const thisProduct = this;
+      /*Generowanie HTML */
+      const generatedHtml = templates.menuProduct(thisProduct.data)
+
+      /* Stworzenie DOM z HTMLu poprzez metodę utils.createDOMFromHTML */
+      thisProduct.element = utils.createDOMFromHTML(generatedHtml);
+      console.log(thisProduct.element);
+
+      /* Znajdź container menu */
+      const menuContainer = document.querySelector(select.containerOf.menu)
+
+      /* Dodajemy elementy menu */
+      menuContainer.appendChild(thisProduct.element)
+
+    }
   }
-}
 
   const app = {
     initMenu: function(){
       const testProduct = new Product();
+      const thisApp = this;
+      console.log('thisApp.data:', thisApp.data);
       console.log('test Product:', testProduct);
+      for(let productData in thisApp.data.products){
+        new Product(productData, thisApp.data.products[productData]);
+      }
     },
 
     init: function(){
@@ -76,12 +100,12 @@ class product {
       thisApp.initData();
       thisApp.initMenu();
     },
-  };
 
-  initData: function(){
-    const thisApp = this;
-    thisApp.data = dataSource;
-  },
+    initData: function(){
+      const thisApp = this;
+      thisApp.data = dataSource;
+    }
+  };
 
   app.init();
 }
