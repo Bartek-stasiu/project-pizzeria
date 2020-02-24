@@ -58,7 +58,9 @@
       thisProduct.id = id;
       thisProduct.data = data;
       thisProduct.renderInMenu();
+      thisProduct.getElements();
       thisProduct.initAccordion();
+
       console.log('new product:', thisProduct);
     }
 
@@ -78,14 +80,14 @@
     }
 
     getElements(){
-  const thisProduct = this;
+      const thisProduct = this;
 
-  thisProduct.accordionTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
-  thisProduct.form = thisProduct.element.querySelector(select.menuProduct.form);
-  thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
-  thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
-  thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
-}
+      thisProduct.accordionTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
+      thisProduct.form = thisProduct.element.querySelector(select.menuProduct.form);
+      thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
+      thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
+      thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
+    }
 
     initAccordion(){
       const thisProduct = this;
@@ -93,26 +95,33 @@
       /* find the clickable trigger (the element that should react to clicking) */
       const clickableTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
       console.log('clickableTrigger: ', clickableTrigger);
+
       /* START: click event listener to trigger */
       clickableTrigger.addEventListener('click', function(){
+
         /* prevent default action for event */
         event.preventDefault();
+
         /* toggle active class on element of thisProduct */
-        thisProduct.toggleClass('active');
+        thisProduct.element.classList.toggle('active'); /*Tu*/
+
         /* find all active products */
         const activeProducts = document.querySelectorAll('.product .active');
+
         /* START LOOP: for each active product */
         for (let product of activeProducts) {
           /* START: if the active product isn't the element of thisProduct */
-          if (product !== thisProduct.element) {
+          if (product != thisProduct.element) { /*Tu*/
+
             /* remove class active for the active product */
             product.classList.remove('active');
+
           /* END: if the active product isn't the element of thisProduct */
           }
         /* END LOOP: for each active product */
         }
       /* END: click event listener to trigger */
-      });
+    }); /*tu*/
     }
   }
 
