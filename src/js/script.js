@@ -60,6 +60,8 @@
       thisProduct.renderInMenu();
       thisProduct.getElements();
       thisProduct.initAccordion();
+      thisProduct.initOrderForm();
+      thisProduct.processOrder();
 
       console.log('new product:', thisProduct);
     }
@@ -71,7 +73,7 @@
 
       /* Stworzenie DOM z HTMLu poprzez metodę utils.createDOMFromHTML */
       thisProduct.element = utils.createDOMFromHTML(generatedHtml);
-
+      console.log(thisProduct.element);
       /* Znajdź container menu */
       const menuContainer = document.querySelector(select.containerOf.menu);
 
@@ -93,7 +95,7 @@
       const thisProduct = this;
 
       /* find the clickable trigger (the element that should react to clicking) */
-      const clickableTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
+      const clickableTrigger = thisProduct.accordionTrigger
       console.log('clickableTrigger: ', clickableTrigger);
 
       /* START: click event listener to trigger */
@@ -121,29 +123,91 @@
         /* END LOOP: for each active product */
         }
       /* END: click event listener to trigger */
-    }); /*tu*/
+      }); /*tu*/
     }
-  }
 
 
+  initOrderForm(){
+    const thisProduct = this;
+    console.log('initOrderForm:', thisProduct);
+    thisProduct.form.addEventListener('submit', function(event){
+  event.preventDefault();
+  thisProduct.processOrder();
+});
+
+for(let input of thisProduct.formInputs){
+  input.addEventListener('change', function(){
+    thisProduct.processOrder();
+  });
+}
+
+thisProduct.cartButton.addEventListener('click', function(event){
+  event.preventDefault();
+  thisProduct.processOrder();
+});
+
+  };
+
+  processOrder() {
+    const thisProduct = this;
+    console.log('processOrder:', thisProduct);
+
+    /* Zapisanie wszystkich values z form do stałej formData*/
+    const formData = utils.serializeFormToObject(thisProduct.form);
+    console.log('formData', formData);
+
+    let price = thisProduct.data.price;
+      console.log('price is:', price);
+
+      /*start loop for each params elements*/
+      for(let paramId in thisProduct.data.params) {
+        const param = thisProduct.data.params[paramId];
+        console.log('param:',param);
+
+        /*start loop for each option of params*/
+        for (let optionId in param.options) {
+          const option = param.options[optionId];
+          console.log('option:', option);
+
+          /*if checked option is NOT default than increase 'price' by the price of THIS OPTION*/
+          if(formData.hasOwnProperty(paramId) && formData[paramId].includes(optionId) && !option.default) {
+            price = price + param.options[optionId].price;
+          }
+
+          /*else, if default option is NOT checked than reduce 'price' by the price of THIS OPTION*/
+          else if (!(formData.hasOwnProperty(paramId) && formData[paramId].includes(optionId)) && option.default) {
+          }
+
+        /*end loop for each option of params*/
+      }
+      /*end loop for each params elements*/
+    }
+      /*insert the value of the 'price' variable into thisProduct.priceElem*/
+      thisProduct.priceElem.innerHTML = price;
+
+
+  };
+
+}
   const app = {
     initMenu: function(){
-      const testProduct = new Product();
+      // const testProduct = new Product();
       const thisApp = this;
-      console.log('thisApp.data:', thisApp.data);
-      console.log('test Product:', testProduct);
+      //console.log('thisApp.data:', thisApp.data);
+
       for(let productData in thisApp.data.products){
+      //  console.log(productData, thisApp.data.products[productData]);
         new Product(productData, thisApp.data.products[productData]);
       }
     },
 
     init: function(){
       const thisApp = this;
-      console.log('*** App starting ***');
-      console.log('thisApp:', thisApp);
-      console.log('classNames:', classNames);
-      console.log('settings:', settings);
-      console.log('templates:', templates);
+      //console.log('*** App starting ***');
+      //console.log('thisApp:', thisApp);
+      //console.log('classNames:', classNames);
+      //console.log('settings:', settings);
+      //console.log('templates:', templates);
       thisApp.initData();
       thisApp.initMenu();
     },
