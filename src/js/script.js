@@ -89,13 +89,14 @@
       thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
       thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
       thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
+      thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
     }
 
     initAccordion(){
       const thisProduct = this;
 
       /* find the clickable trigger (the element that should react to clicking) */
-      const clickableTrigger = thisProduct.accordionTrigger
+      const clickableTrigger = thisProduct.accordionTrigger;
       console.log('clickableTrigger: ', clickableTrigger);
 
       /* START: click event listener to trigger */
@@ -127,42 +128,42 @@
     }
 
 
-  initOrderForm(){
-    const thisProduct = this;
-    console.log('initOrderForm:', thisProduct);
-    thisProduct.form.addEventListener('submit', function(event){
-  event.preventDefault();
-  thisProduct.processOrder();
-});
+    initOrderForm(){
+      const thisProduct = this;
+      console.log('initOrderForm:', thisProduct);
+      thisProduct.form.addEventListener('submit', function(event){
+        event.preventDefault();
+        thisProduct.processOrder();
+      });
 
-for(let input of thisProduct.formInputs){
-  input.addEventListener('change', function(){
-    thisProduct.processOrder();
-  });
-}
+      for(let input of thisProduct.formInputs){
+        input.addEventListener('change', function(){
+          thisProduct.processOrder();
+        });
+      }
 
-thisProduct.cartButton.addEventListener('click', function(event){
-  event.preventDefault();
-  thisProduct.processOrder();
-});
+      thisProduct.cartButton.addEventListener('click', function(event){
+        event.preventDefault();
+        thisProduct.processOrder();
+      });
 
-  };
+    }
 
-  processOrder() {
-    const thisProduct = this;
-    console.log('processOrder:', thisProduct);
+    processOrder() {
+      const thisProduct = this;
+      console.log('processOrder:', thisProduct);
 
-    /* Zapisanie wszystkich values z form do stałej formData*/
-    const formData = utils.serializeFormToObject(thisProduct.form);
-    console.log('formData', formData);
+      /* Zapisanie wszystkich values z form do stałej formData*/
+      const formData = utils.serializeFormToObject(thisProduct.form);
+      console.log('formData', formData);
 
-    let price = thisProduct.data.price;
+      let price = thisProduct.data.price;
       console.log('price is:', price);
 
       /*start loop for each params elements*/
       for(let paramId in thisProduct.data.params) {
         const param = thisProduct.data.params[paramId];
-        console.log('param:',param);
+        console.log('param:', param);
 
         /*start loop for each option of params*/
         for (let optionId in param.options) {
@@ -176,19 +177,36 @@ thisProduct.cartButton.addEventListener('click', function(event){
 
           /*else, if default option is NOT checked than reduce 'price' by the price of THIS OPTION*/
           else if (!(formData.hasOwnProperty(paramId) && formData[paramId].includes(optionId)) && option.default) {
+            price = price - param.options[optionId].price;
           }
 
+          /*make constant and add to it all images for option*/
+          const optionImages = thisProduct.imageWrapper.querySelector('.' + paramId + '-' + optionId);
+          console.log('IMAGES:', optionImages);
+
+          /*if option is checked ADD to all option images class equal to class 'classNames.menuProduct.imageVisible'*/
+          if(formData.hasOwnProperty(paramId) && formData[paramId].includes(optionId)) {
+            for (let images in optionImages) {
+              images.classList.add(classNames.menuProduct.imageVisible);
+            }
+          }
+          /*else - all option images DELETE class equal to class in "classNames.menuProduct.imageVisible"*/
+          else {
+            for (let images in optionImages) {
+              images.classList.remove(classNames.menuProduct.imageVisible);
+            }
+          }
         /*end loop for each option of params*/
-      }
+        }
       /*end loop for each params elements*/
-    }
+      }
       /*insert the value of the 'price' variable into thisProduct.priceElem*/
       thisProduct.priceElem.innerHTML = price;
 
 
-  };
+    }
 
-}
+  }
   const app = {
     initMenu: function(){
       // const testProduct = new Product();
