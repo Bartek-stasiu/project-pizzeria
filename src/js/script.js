@@ -48,6 +48,8 @@
     }
   };
 
+  console.log(settings);
+
   const templates = {
     menuProduct: Handlebars.compile(document.querySelector(select.templateOf.menuProduct).innerHTML),
   };
@@ -61,6 +63,7 @@
       thisProduct.getElements();
       thisProduct.initAccordion();
       thisProduct.initOrderForm();
+      thisProduct.initAmountWidget();
       thisProduct.processOrder();
 
       console.log('new product:', thisProduct);
@@ -90,6 +93,7 @@
       thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
       thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
       thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
+      thisProduct.amountWidgetElem = thisProduct.element.querySelector(select.menuProduct.amountWidget);
     }
 
     initAccordion(){
@@ -181,18 +185,18 @@
           }
 
           /*make constant and add to it all images for option*/
-          const optionImages = thisProduct.imageWrapper.querySelector('.' + paramId + '-' + optionId);
+          const optionImages = thisProduct.imageWrapper.querySelectorAll('.' + paramId + '-' + optionId);
           console.log('IMAGES:', optionImages);
 
           /*if option is checked ADD to all option images class equal to class 'classNames.menuProduct.imageVisible'*/
           if(formData.hasOwnProperty(paramId) && formData[paramId].includes(optionId)) {
-            for (let images in optionImages) {
+            for (let images of optionImages) {
               images.classList.add(classNames.menuProduct.imageVisible);
             }
           }
           /*else - all option images DELETE class equal to class in "classNames.menuProduct.imageVisible"*/
           else {
-            for (let images in optionImages) {
+            for (let images of optionImages) {
               images.classList.remove(classNames.menuProduct.imageVisible);
             }
           }
